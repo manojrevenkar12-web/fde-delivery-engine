@@ -72,6 +72,10 @@ def render(root: Path) -> str:
     dev = json.loads((root / "reports/dev.json").read_text(encoding="utf-8"))
     held_path = root / "reports/heldout.json"
     held = json.loads(held_path.read_text(encoding="utf-8")) if held_path.exists() else None
+    stress_path = root / "reports/stress.json"
+    stress = json.loads(stress_path.read_text(encoding="utf-8")) if stress_path.exists() else None
+    before = {k: json.loads((root / f"reports/{k}-at-heldout.json").read_text(encoding="utf-8"))
+              for k in ("dev", "stress") if (root / f"reports/{k}-at-heldout.json").exists()}
     gate = json.loads((root / "config/gate.json").read_text(encoding="utf-8"))
     product = json.loads((root / "config/product.json").read_text(encoding="utf-8"))
     py_tests, web_tests = _count_tests(root)
@@ -124,6 +128,13 @@ def render(root: Path) -> str:
         f"{e['blockedThatWouldHavePassed']} held back that would have passed |")
     add(f"| Templates built from repeated work | **{e['templatesBuilt']}** | {e['hoursSavedByTemplates']} hours saved "
         f"for {e['templateHours']} hours spent building them |")
+    if held is not None:
+        hv = gate_mod.check(gate, held)
+        add(f"| Held-out year, run once | **gate {'passed' if hv['passed'] else 'failed'}** | "
+            f"{_pct(held['designs']['engine']['milestonesOnPlan'], 1)} on plan against "
+            f"{_pct(held['designs']['by_hand']['milestonesOnPlan'], 1)} by hand, "
+            f"{sum(1 for x in hv['lines'] if x.startswith('FAIL'))} of {len(hv['lines']) - 1} lines failed, "
+            f"[what changed](#after-the-held-out-year) |")
     add(f"| Tests | **{py_tests + web_tests}** | {py_tests} Python, {web_tests} console |")
     add("")
     add("### Every design on the dev year")
@@ -136,25 +147,45 @@ def render(root: Path) -> str:
     add("")
     add("### What the ablations say")
     add("")
+    def mv(a: float, b: float, up: str, down: str, same: str = "stays at") -> str:
+        return up if b > a + 1e-9 else down if b < a - 1e-9 else same
+
     add(f"- **The go-live gate is where incidents go.** Without it the engine ships {ng['productionIncidents']} "
-        f"pipelines that fail in production instead of {e['productionIncidents']}, customer escalations go from "
-        f"{e['customerEscalations']} to {ng['customerEscalations']} and margin falls from {_pct(e['marginShare'], 1)} "
-        f"to {_pct(ng['marginShare'], 1)}, because every incident costs rework hours and a penalty.")
-    add(f"- **The escalation agent costs a little delivery and buys money.** Without it milestones on plan are "
-        f"{_pct(ne['milestonesOnPlan'], 1)} against {_pct(e['milestonesOnPlan'], 1)}, but surprise slips rise from "
-        f"{e['surpriseSlips']} to {ne['surpriseSlips']} and margin drops to {_pct(ne['marginShare'], 1)}: scope "
-        f"creep that nobody turned into a change request is unpaid work.")
-    add(f"- **Templates pay back.** Without them milestones on plan fall to {_pct(np_['milestonesOnPlan'], 1)} and "
-        f"margin to {_pct(np_['marginShare'], 1)}.")
-    add(f"- **Saying no is part of the job.** The engine that accepts every opportunity earns the most this year "
-        f"({_pct(na['marginShare'], 1)} margin, utilization {_pct(na['utilization'], 1)}) and slips half its "
-        f"milestones ({_pct(na['milestonesOnPlan'], 1)} on plan, {na['surpriseSlips']} surprise slips, "
-        f"{na['customerEscalations']} customer escalations). The intake rule declined {e['engagementsDeclined']} "
-        f"opportunities worth {_eur(e['declinedFeeEur'])}. That trade is the manager's call; the engine shows it "
-        f"before the contract is signed.")
+        f"pipelines that fail in production instead of {e['productionIncidents']}. Customer escalations go from "
+        f"{e['customerEscalations']} to {ng['customerEscalations']} and margin from {_pct(e['marginShare'], 1)} to "
+        f"{_pct(ng['marginShare'], 1)}, because every incident costs rework hours and a penalty. Milestones on plan "
+        f"are {_pct(ng['milestonesOnPlan'], 1)} without it: the gate costs the rework weeks it asks for.")
+    add(f"- **The escalation agent is worth its money.** Without it milestones on plan are "
+        f"{_pct(ne['milestonesOnPlan'], 1)} against {_pct(e['milestonesOnPlan'], 1)}, surprise slips "
+        f"{mv(e['surpriseSlips'], ne['surpriseSlips'], 'rise', 'fall')} from {e['surpriseSlips']} to "
+        f"{ne['surpriseSlips']} and margin {mv(e['marginShare'], ne['marginShare'], 'rises', 'drops')} to "
+        f"{_pct(ne['marginShare'], 1)}. Scope creep that nobody turned into a change request is unpaid work.")
+    add(f"- **Templates are an investment.** Without them milestones on plan are {_pct(np_['milestonesOnPlan'], 1)} "
+        f"(builders spend no idle hours on templates) and margin {mv(e['marginShare'], np_['marginShare'], 'rises', 'falls')} "
+        f"to {_pct(np_['marginShare'], 1)}, because every later engagement repeats the custom work.")
+    add(f"- **Saying no is part of the job.** The engine that accepts every opportunity reaches "
+        f"{_pct(na['marginShare'], 1)} margin at {_pct(na['utilization'], 1)} utilization, with "
+        f"{_pct(na['milestonesOnPlan'], 1)} of milestones on plan, {na['surpriseSlips']} surprise slips and "
+        f"{na['burnoutWeeks']} person-weeks above 90% load. The intake rule declined {e['engagementsDeclined']} "
+        f"opportunities worth {_eur(e['declinedFeeEur'])}. That trade is the manager's call. The engine shows it "
+        f"before the contract is signed, and the stress year below shows what it is worth when demand outruns the team.")
     add(f"- **The baselines are honest.** Staffing the first free person of the right profile reaches "
         f"{_pct(ff['milestonesOnPlan'], 1)} on plan with {ff['productionIncidents']} incidents.")
     add("")
+    if stress is not None:
+        se, sb, sa = stress["designs"]["engine"], stress["designs"]["by_hand"], stress["designs"]["engine_accept_all"]
+        add("### The stress year")
+        add("")
+        add(f"A second dev year, written after the held-out run to reproduce what it found, with its own seed: "
+            f"{_world_line(stress['world'])}. The arrivals are more than the team can deliver, so every design is "
+            f"short. The engine keeps {_pct(se['milestonesOnPlan'], 1)} of milestones on plan against "
+            f"{_pct(sb['milestonesOnPlan'], 1)} by hand, at {_pct(se['marginShare'], 1)} margin. Accepting everything "
+            f"would earn {_pct(sa['marginShare'], 1)} and keep {_pct(sa['milestonesOnPlan'], 1)} on plan with "
+            f"{sa['customerEscalations']} customer escalations. It is still below the 80% line. On a year like this "
+            f"the answer is another builder, and every intake decision says which profile was short.")
+        add("")
+        lines.extend(_table(stress))
+        add("")
     add("### The gate, written before any result")
     add("")
     add("`config/gate.json` was written before the first evaluation and is not moved. Dev:")
@@ -175,11 +206,29 @@ def render(root: Path) -> str:
             "with. What happened and what changed afterwards is in [docs/heldout.md](docs/heldout.md).")
         add("")
         add(f"Engine {_pct(he['milestonesOnPlan'], 1)} milestones on plan against {_pct(hb['milestonesOnPlan'], 1)} "
-            f"by hand, {he['productionIncidents']} production incidents against {hb['productionIncidents']}.")
+            f"by hand. Production incidents: {he['productionIncidents']} against {hb['productionIncidents']}.")
         add("")
         lines.extend(_table(held))
         add("")
         lines.extend(_gate_block(gate, held))
+    if before:
+        add("")
+        add("### After the held-out year")
+        add("")
+        add("Three planner fixes and one intake fix came out of it (see [docs/heldout.md](docs/heldout.md)), measured on dev and on "
+            "the stress year only. The held-out year was not run again. The engine before and after:")
+        add("")
+        add("| Year | Milestones on plan | Surprise slips | Utilization | Person-weeks above 90% load | Margin | Declined |")
+        add("|---|---:|---:|---:|---:|---:|---:|")
+        now = {"dev": dev, "stress": stress}
+        for k in ("dev", "stress"):
+            if k not in before or now.get(k) is None:
+                continue
+            for when, rep in (("at the held-out run", before[k]), ("now", now[k])):
+                d = rep["designs"]["engine"]
+                add(f"| {k} {when} | {_pct(d['milestonesOnPlan'], 1)} | {d['surpriseSlips']} | "
+                    f"{_pct(d['utilization'], 1)} | {d['burnoutWeeks']} | {_pct(d['marginShare'], 1)} | "
+                    f"{d['engagementsDeclined']} |")
     add("")
     add("## What is in it")
     add("")
@@ -222,7 +271,9 @@ def render(root: Path) -> str:
     add("")
     add("![The staffing board for the week](docs/console-team.png)")
     add("")
-    add("![A go-live review that held back a pipeline](docs/console-review.png)")
+    add("![Go-live reviews: two pipelines held back for a stale index, one ready](docs/console-review.png)")
+    add("")
+    add("![The results view, generated from the reports](docs/console-results.png)")
     add("")
     add("## How it is kept honest")
     add("")

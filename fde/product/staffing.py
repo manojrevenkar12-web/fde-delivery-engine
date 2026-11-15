@@ -91,38 +91,54 @@ def plan_week(week: int, roster: list[Fde], available: dict[str, int], states: l
             priority *= settings.escalated_priority_boost
         demands.append(_Demand(st, st.phase, PROFILE_OF_PHASE[st.phase], need, max(0.0, remaining - need), priority,
                                weeks_left if overdue < 0 else 0))
-    demands.sort(key=lambda d: (-d.priority, d.state.engagement.id))
+    # Within the same urgency, the work only a few people can do is staffed first, while those people are free.
+    def qualified(d: _Demand) -> int:
+        return sum(1 for f in roster if f.profile == d.profile and d.state.engagement.required_skills <= f.skills
+                   and available.get(f.id, 0) > 0)
+    demands.sort(key=lambda d: (-d.priority, qualified(d), d.state.engagement.id))
+    # How many hours this week ask for each skill: a person whose skills are wanted elsewhere is spared for that work.
+    wanted: dict[str, float] = defaultdict(float)
+    for d in demands:
+        for skill in d.state.engagement.required_skills:
+            wanted[skill] += d.need
 
     def fit(f: Fde, profile: str) -> float:
         if f.profile == profile:
             return 1.0
         return adjacent.get(profile, {}).get(f.profile, 0.0)
 
-    def rate(f: Fde, d: _Demand) -> float:
-        """Expected effective output per hour: profile fit, skill coverage, ramp-up for someone new."""
+    def steady(f: Fde, d: _Demand) -> float:
+        """Output per hour once someone is on the engagement: profile fit and skill coverage."""
         r = fit(f, d.profile)
         if not d.state.engagement.required_skills <= f.skills:
             r *= 0.0 if settings.skill_mismatch_allowed is None else settings.skill_gap
+        return r
+
+    def rate(f: Fde, d: _Demand) -> float:
+        """Expected output per hour this week: the steady rate, less the ramp-up for someone new."""
+        r = steady(f, d)
         if (f.id, d.state.engagement.id) not in previous:
             r *= settings.ramp_up
         return r
 
-    def assign(d: _Demand, amount: float, cap: dict[str, int], floor_rate: float) -> float:
+    def assign(d: _Demand, amount: float, cap: dict[str, int], floor_rate: float, own_only: bool = False) -> float:
         """Places `amount` effective hours on the people who turn hours into progress best; returns what is left."""
         while amount > 0:
-            best: tuple[float, float, str, Fde] | None = None
+            best: tuple[tuple[float, float, float], str, Fde] | None = None
             for f in roster:
-                if load[f.id] + block > cap[f.id]:
+                if load[f.id] + block > cap[f.id] or (own_only and f.profile != d.profile):
                     continue
                 r = rate(f, d)
-                if r < floor_rate or r <= 0:
+                # Whether someone can do the work is judged on their steady rate: a ramp-up is a one-week cost.
+                if steady(f, d) < floor_rate or r <= 0:
                     continue
-                key = (r, -load[f.id] / max(1, available.get(f.id, 0)), f.id)
-                if best is None or key[:2] > best[:2] or (key[:2] == best[:2] and f.id < best[2]):
-                    best = (key[0], key[1], f.id, f)
+                spare = -sum(wanted[k] for k in f.skills - d.state.engagement.required_skills)
+                key = (r, spare, -load[f.id] / max(1, available.get(f.id, 0)))
+                if best is None or key > best[0] or (key == best[0] and f.id < best[1]):
+                    best = (key, f.id, f)
             if best is None:
                 return amount
-            f, r = best[3], best[0]
+            f, r = best[2], best[0][0]
             # Give one person as much of the need as they can take: every new pairing pays a ramp-up.
             room = _floor_block(cap[f.id] - load[f.id], block)
             take = min(room, math.ceil(amount / r / block) * block)
@@ -131,8 +147,12 @@ def plan_week(week: int, roster: list[Fde], available: dict[str, int], states: l
             amount -= take * r
         return 0.0
 
-    for d in demands:
-        short = assign(d, d.need, limit, settings.min_effective_rate)
+    # Everyone goes first to the work of their own profile; only then do adjacent profiles cover what is left.
+    short_of: dict[int, float] = {}
+    for n, d in enumerate(demands):
+        short_of[n] = assign(d, d.need, limit, settings.min_effective_rate, own_only=True)
+    for n, d in enumerate(demands):
+        short = assign(d, short_of[n], limit, settings.min_effective_rate) if short_of[n] > 0 else 0.0
         at_stake = d.weeks_left == 1  # due next week and still savable; overdue work (0) does not qualify
         if short > 0 and at_stake:
             # A date is at stake: stretch people who were not hot last week, then take weaker matches.
@@ -161,7 +181,7 @@ def plan_week(week: int, roster: list[Fde], available: dict[str, int], states: l
         for f in sorted(roster, key=lambda x: (-rate(x, d), load[x.id], x.id)):
             if d.forward <= 0:
                 break
-            if rate(f, d) < settings.min_effective_rate or load[f.id] >= floor[f.id]:
+            if steady(f, d) < settings.min_effective_rate or load[f.id] >= floor[f.id]:
                 continue
             add = _floor_block(min(d.forward, floor[f.id] - load[f.id] + block, limit[f.id] - load[f.id]), block)
             if add > 0:

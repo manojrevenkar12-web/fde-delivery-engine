@@ -30,3 +30,27 @@ def test_intake_says_no_when_a_profile_would_be_overloaded():
     busy = [EngagementState(eng(f"B{i}", 0, 1.5), "build") for i in range(3)]
     d = intake.decide(0, eng("E9", 0), busy, roster, CATALOG, PRODUCT)
     assert not d.accept and "builder" in d.reason
+
+
+def test_intake_counts_the_people_who_have_the_skills_the_work_needs():
+    roster = [Fde("f-advisory-1", "a", "advisory", frozenset({"german"}), 40),
+              Fde("f-advisory-2", "b", "advisory", frozenset(), 40),
+              Fde("f-advisory-3", "c", "advisory", frozenset(), 40),
+              *[Fde(f"f-{p}-1", p, p, frozenset({"german"}), 40) for p in ("builder", "operating", "support")]]
+
+    def discovery_heavy(eid, skills):
+        phases = {"discovery": PhaseScope(150, 3), "build": PhaseScope(8, 20), "go_live": PhaseScope(8, 22),
+                  "hypercare": PhaseScope(8, 24)}
+        return Engagement(eid, "K", "public", "cloud", "tm", 1, 0, phases, frozenset(skills), ())
+
+    def german(eid):
+        return discovery_heavy(eid, {"german"})
+
+    def plain(eid):
+        return discovery_heavy(eid, ())
+
+    busy = [EngagementState(german(f"G{i}"), "discovery") for i in range(3)]
+    d = intake.decide(0, german("G9"), busy, roster, CATALOG, PRODUCT)
+    assert not d.accept and "advisory with german" in d.reason
+    busy_plain = [EngagementState(plain(f"P{i}"), "discovery") for i in range(3)]
+    assert intake.decide(0, plain("P9"), busy_plain, roster, CATALOG, PRODUCT).accept

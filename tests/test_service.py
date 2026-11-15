@@ -53,8 +53,11 @@ def test_a_note_is_read_scored_and_escalated_with_reasons(client):
 
 
 def test_go_live_review_blocks_a_broken_pipeline_and_passes_a_fixed_one(client):
-    review = client.get("/api/reviews", headers=M).json()["reviews"][0]
-    eid = review["engagementId"]
+    reviews = client.get("/api/reviews", headers=M).json()["reviews"]
+    as_delivered = {r["engagementId"]: client.post(f"/api/reviews/{r['engagementId']}/run", headers=M, json={}).json()
+                    for r in reviews}
+    assert any(not v["passed"] for v in as_delivered.values()), "the demo holds a pipeline the gate holds back"
+    eid = next(k for k, v in as_delivered.items() if v["passed"])
     bad = client.post(f"/api/reviews/{eid}/run", headers=M, json={"config": {"split_length": 8, "split_overlap": 0}})
     assert bad.status_code == 200 and not bad.json()["passed"] and bad.json()["findings"]
     good = client.post(f"/api/reviews/{eid}/run", headers=M,

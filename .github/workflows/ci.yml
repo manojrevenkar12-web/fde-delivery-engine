@@ -21,7 +21,7 @@ jobs:
           python -m fde.eval.cli gate
           python -m fde.eval.cli readme
           python -m fde.eval.cli seed
-          git diff --exit-code reports/dev.json README.md demo/seed.json
+          git diff --exit-code reports/dev.json reports/stress.json README.md demo/seed.json
 
   postgres:
     runs-on: ubuntu-latest

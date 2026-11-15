@@ -37,3 +37,24 @@ Three things went wrong together, all in the planner and intake rather than in t
    operating engineer, the planner could put them on work that needed no German while German work waited.
 3. **Intake declined on a forecast that the planner could not meet.** Because of 1 and 2, the team delivered less
    than its capacity, the forecast filled up, and intake said no to work the team could have done.
+
+## What changed, measured on dev
+
+The fixes were made and measured on dev and on a second dev year, `config/stress.json`, written after the held-out
+run to reproduce its shape with its own seed (`dev-stress-a`). The held-out year was not run again and
+`config/gate.json` was not moved.
+
+- **Whether someone can do the work is judged on their steady rate.** A ramp-up is a one-week cost, not a reason to
+  leave someone idle. It still ranks people: someone already on the engagement goes first.
+- **Everyone goes first to the work of their own profile.** Only then do adjacent profiles cover what is left, so
+  cover never takes a builder away from a build to do discovery.
+- **The work only a few people can do is staffed first**, within the same urgency, and a person whose skills are
+  wanted elsewhere this week is spared for that work.
+- **Intake counts the people who have the skills the work needs.** German or cleared work is checked against the
+  people who have those skills, with everyone else counted at the rate the planner assumes for a skill gap. The
+  decision names the profile and skills that were short, which is what a hiring request needs.
+
+On the stress year the engine is still below the 80% line. That year has more work than the team can deliver, and
+no planner fixes that: the decisions name the builder bench as the profile that was short.
+
+The before-and-after numbers are in the README under "After the held-out year".

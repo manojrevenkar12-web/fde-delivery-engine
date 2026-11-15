@@ -34,7 +34,8 @@ class SignalReader(Protocol):
 _PCT = re.compile(r"(\d{1,3})\s?%")
 _LEXICON = {
     "blocker": [r"\bblocked\b", r"\bblocker\b", r"\bwaiting (on|for)\b", r"\bblockiert\b", r"\bwarten (auf|noch)\b",
-                r"\bcannot proceed\b", r"\bkommen nicht weiter\b"],
+                r"\bcannot proceed\b", r"\bkommen nicht weiter\b", r"\bwarten seit\b",
+                r"\bnoch nicht erteilt\b", r"\bstill no\b"],
     "data_access": [r"\b(data|vpn|server|cluster|index) access\b", r"\bno access\b", r"\bzugang\b", r"\bzugriff\b",
                     r"\bcredentials\b", r"\bfreigabe\b"],
     "scope_change": [r"\bnew requirement", r"\badditional (scope|request|requirement)", r"\balso (want|need|asked)",

@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { api } from '../../shared/api.ts'
 import { kind, pct, signalTags } from '../../shared/format.ts'
-import { PHASE_LABEL, motion as timing } from '../../shared/tokens.ts'
+import { PHASE_LABEL, SKILL_LABEL, motion as timing } from '../../shared/tokens.ts'
 import type { Decision, EngagementDetail, Signals } from '../../shared/types.ts'
 import { useResource } from '../../shared/useResource.ts'
 import { EmptyState, ErrorState, Skeleton } from '../../shared/ui/States.tsx'
@@ -93,7 +93,7 @@ export function EngagementView({ id, onChanged }: { id: string | undefined; onCh
         <h1 className={styles.title}>{data.customer}</h1>
         <p className={styles.sub}>
           {data.id}, {data.sector.replace('_', ' ')}, {data.topology.replace('_', '-')}, {data.contract === 'tm' ? 'time and materials' : 'fixed fee'}.
-          {data.requiredSkills.length ? ` Needs ${data.requiredSkills.join(' and ')}.` : ''}
+          {data.requiredSkills.length ? ` Needs ${data.requiredSkills.map((k) => SKILL_LABEL[k] ?? k).join(' and ')}.` : ''}
         </p>
       </header>
       <Phases e={data} />

@@ -1,14 +1,15 @@
 # Working in fde-delivery-engine
 
 Fast feedback first: `pytest -q tests` runs every Python test (planner, escalation, go-live gate, patterns, intake,
-evaluation, invariants, service) in about a minute. `cd web && npm test && npm run typecheck` for the console. After
+evaluation, invariants, service) in seconds; `evaluate` takes about a minute. `cd web && npm test && npm run typecheck` for the console. After
 any change to the product, the world or the settings run
 
 ```bash
 python -m fde.eval.cli evaluate && python -m fde.eval.cli gate && python -m fde.eval.cli readme && python -m fde.eval.cli seed
 ```
 
-and commit the regenerated `reports/dev.json`, `README.md` and `demo/seed.json`. CI fails when they disagree with the
+and commit the regenerated `reports/dev.json`, `reports/stress.json`, `README.md` and `demo/seed.json`. CI fails when
+they disagree with the
 code. Python 3.13: the bootstrap and the keyed draws are deterministic on one Python version.
 
 ## Packages

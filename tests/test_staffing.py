@@ -72,3 +72,29 @@ def test_reported_progress_reestimates_what_is_left():
     assert st.remaining_estimate("build") == 10
     st.reported_done["build"] = 0.5
     assert st.remaining_estimate("build") == 150, "half done after 150h means 150h more, not 10"
+
+
+def test_an_adjacent_profile_covers_a_build_when_builders_are_full():
+    # Held-out finding: cover from an adjacent profile could never start, because the ramp-up week took its
+    # expected rate below the minimum. Whether someone can do the work is judged on their steady rate.
+    roster = [fde(1, "builder"), fde(1, "operating")]
+    st = state(engagement("E1", due_build=4, build=300))
+    plan = plan_week(1, roster, {f.id: 40 for f in roster}, [st], None, {}, [], SETTINGS, CATALOG)
+    assert plan.hours_of("f-operating-1") > 0
+
+
+def test_cover_never_takes_someone_from_the_work_of_their_own_profile():
+    roster = [fde(1, "builder"), fde(1, "operating")]
+    build = state(engagement("E1", due_build=3, build=300))
+    go_live = EngagementState(engagement("E2", due_build=1), "go_live")
+    plan = plan_week(2, roster, {f.id: 40 for f in roster}, [build, go_live], None, {}, [], SETTINGS, CATALOG)
+    assert any(a.fde_id == "f-operating-1" and a.engagement_id == "E2" for a in plan.assignments)
+
+
+def test_the_only_german_speaker_is_spared_for_german_work():
+    roster = [fde(1, "advisory", skills=("german",)), fde(2, "advisory", skills=())]
+    german = EngagementState(engagement("E1", skills=("german",)), "discovery")
+    any_one = EngagementState(engagement("E2", skills=()), "discovery")
+    plan = plan_week(0, roster, {f.id: 40 for f in roster}, [any_one, german], None, {}, [], SETTINGS, CATALOG)
+    on_german = {a.fde_id for a in plan.assignments if a.engagement_id == "E1"}
+    assert on_german == {"f-advisory-1"}

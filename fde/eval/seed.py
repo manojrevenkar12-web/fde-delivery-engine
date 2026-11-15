@@ -39,10 +39,16 @@ def build(root: Path) -> dict[str, Any]:
         })
     # Pipelines waiting for go-live review: the deployed config, the indexed documents and the customer's golden set.
     review = []
-    live = [s for s in states.values() if not s.done and s.phase in ("build", "go_live")]
-    for st in sorted(live, key=lambda s: s.engagement.id)[:4]:
-        job = next(j for j in w.jobs if j.id == st.engagement.id)
-        dep = pipelines.build(w, job, [])
+    live = [s for s in states.values() if not s.done]
+    # The demo shows both outcomes: up to two pipelines of the year that were built with a defect, and live
+    # healthy ones after them.
+    # Which is which stays out of the seed; the console finds out by running the gate.
+    def deployed(ids: list[str]) -> list[tuple[Any, Any]]:
+        return [(job, pipelines.build(w, job, [])) for job in w.jobs if job.id in ids]
+    every = deployed(sorted(states))
+    shown = [d for d in every if d[1].defects][:2]
+    shown += [d for d in deployed(sorted(s.engagement.id for s in live)) if not d[1].defects][:4 - len(shown)]
+    for job, dep in sorted(shown, key=lambda d: d[0].id):
         review.append({"engagementId": job.id, "topology": job.topology, "config": dep.config,
                        "documents": [{"id": d.id, "content": d.content, "department": d.department}
                                      for d in dep.documents],

@@ -12,53 +12,68 @@ Dev year: 52 weeks, 14 forward-deployed engineers, 47 opportunities (23 public s
 
 | | Engine | Note |
 |---|---:|---|
-| Milestones on plan | **82%** | by hand 14% |
-| Surprise slips | **11** | by hand 42 |
-| Person-weeks above 90% load | **163** | by hand 461 |
+| Milestones on plan | **94%** | by hand 14% |
+| Surprise slips | **5** | by hand 42 |
+| Person-weeks above 90% load | **88** | by hand 461 |
 | Production incidents | **0** | by hand 7 |
-| Margin | **9.6%** | by hand -0.5% |
-| Customer escalations | **5** | by hand 28 |
-| Per-engagement gain in milestones on plan | **+63.5 pts** | paired bootstrap over 32 engagements, 90% interval 54.3 to 72.2 |
-| Average team load | **73%** | by hand 72%, target 82% |
-| Pipelines the gate held back | **6** | would have failed in production, 0 held back that would have passed |
-| Templates built from repeated work | **8** | 1077 hours saved for 232 hours spent building them |
-| Tests | **42** | 31 Python, 11 console |
+| Margin | **25.1%** | by hand -0.5% |
+| Customer escalations | **3** | by hand 28 |
+| Per-engagement gain in milestones on plan | **+75.0 pts** | paired bootstrap over 37 engagements, 90% interval 67.0 to 82.5 |
+| Average team load | **74%** | by hand 72%, target 82% |
+| Pipelines the gate held back | **4** | would have failed in production, 0 held back that would have passed |
+| Templates built from repeated work | **11** | 1664 hours saved for 328 hours spent building them |
+| Held-out year, run once | **gate failed** | 56.8% on plan against 7.6% by hand, 3 of 8 lines failed, [what changed](#after-the-held-out-year) |
+| Tests | **47** | 36 Python, 11 console |
 
 ### Every design on the dev year
 
 | Design | Milestones on plan | Surprise slips | Customer escalations | Utilization | Person-weeks above 90% load | Production incidents | Margin | Declined |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| **Engine** | 82.0% | 11 | 5 | 72.3% | 163 | 0 | 9.6% | 12 |
+| **Engine** | 94.3% | 5 | 3 | 73.2% | 88 | 0 | 25.1% | 8 |
 | By hand (baseline) | 13.8% | 42 | 28 | 71.6% | 461 | 7 | -0.5% | 0 |
 | First free person | 18.4% | 41 | 26 | 73.8% | 454 | 13 | -8.1% | 0 |
-| Engine, no go-live gate | 82.7% | 10 | 12 | 72.3% | 157 | 7 | 5.5% | 12 |
-| Engine, no escalation agent | 86.1% | 13 | 4 | 71.7% | 179 | 0 | 2.3% | 16 |
-| Engine, no templates | 79.4% | 9 | 3 | 71.0% | 152 | 0 | 3.6% | 14 |
-| Engine, accepts every opportunity | 53.0% | 34 | 15 | 81.1% | 234 | 0 | 21.9% | 0 |
+| Engine, no go-live gate | 96.0% | 2 | 5 | 73.4% | 83 | 4 | 22.8% | 8 |
+| Engine, no escalation agent | 94.7% | 6 | 4 | 72.6% | 106 | 0 | 17.7% | 11 |
+| Engine, no templates | 95.4% | 2 | 0 | 72.2% | 77 | 0 | 14.8% | 12 |
+| Engine, accepts every opportunity | 84.2% | 12 | 3 | 79.3% | 168 | 0 | 27.2% | 0 |
 
 "Person-weeks above 90% load" counts weeks in which one person was planned above 90% of their hours. It is the stretch the team pays for a milestone, not a medical measure. In the world, a person who stays there loses productivity and may fall sick.
 
 ### What the ablations say
 
-- **The go-live gate is where incidents go.** Without it the engine ships 7 pipelines that fail in production instead of 0, customer escalations go from 5 to 12 and margin falls from 9.6% to 5.5%, because every incident costs rework hours and a penalty.
-- **The escalation agent costs a little delivery and buys money.** Without it milestones on plan are 86.1% against 82.0%, but surprise slips rise from 11 to 13 and margin drops to 2.3%: scope creep that nobody turned into a change request is unpaid work.
-- **Templates pay back.** Without them milestones on plan fall to 79.4% and margin to 3.6%.
-- **Saying no is part of the job.** The engine that accepts every opportunity earns the most this year (21.9% margin, utilization 81.1%) and slips half its milestones (53.0% on plan, 34 surprise slips, 15 customer escalations). The intake rule declined 12 opportunities worth €1,024k. That trade is the manager's call; the engine shows it before the contract is signed.
+- **The go-live gate is where incidents go.** Without it the engine ships 4 pipelines that fail in production instead of 0. Customer escalations go from 3 to 5 and margin from 25.1% to 22.8%, because every incident costs rework hours and a penalty. Milestones on plan are 96.0% without it: the gate costs the rework weeks it asks for.
+- **The escalation agent is worth its money.** Without it milestones on plan are 94.7% against 94.3%, surprise slips rise from 5 to 6 and margin drops to 17.7%. Scope creep that nobody turned into a change request is unpaid work.
+- **Templates are an investment.** Without them milestones on plan are 95.4% (builders spend no idle hours on templates) and margin falls to 14.8%, because every later engagement repeats the custom work.
+- **Saying no is part of the job.** The engine that accepts every opportunity reaches 27.2% margin at 79.3% utilization, with 84.2% of milestones on plan, 12 surprise slips and 168 person-weeks above 90% load. The intake rule declined 8 opportunities worth €729k. That trade is the manager's call. The engine shows it before the contract is signed, and the stress year below shows what it is worth when demand outruns the team.
 - **The baselines are honest.** Staffing the first free person of the right profile reaches 18.4% on plan with 13 incidents.
+
+### The stress year
+
+A second dev year, written after the held-out run to reproduce what it found, with its own seed: 52 weeks, 14 forward-deployed engineers, 76 opportunities (40 public sector, 9 finance, 11 insurance, 16 manufacturing, 25 air-gapped), seed `dev-stress-a`. The arrivals are more than the team can deliver, so every design is short. The engine keeps 69.5% of milestones on plan against 2.5% by hand, at 26.3% margin. Accepting everything would earn 40.2% and keep 22.9% on plan with 46 customer escalations. It is still below the 80% line. On a year like this the answer is another builder, and every intake decision says which profile was short.
+
+| Design | Milestones on plan | Surprise slips | Customer escalations | Utilization | Person-weeks above 90% load | Production incidents | Margin | Declined |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Engine** | 69.5% | 23 | 7 | 78.6% | 190 | 0 | 26.3% | 38 |
+| By hand (baseline) | 2.5% | 85 | 43 | 66.9% | 429 | 9 | -11.1% | 0 |
+| First free person | 1.8% | 86 | 46 | 74.1% | 458 | 10 | -19.6% | 0 |
+| Engine, no go-live gate | 66.1% | 27 | 15 | 82.7% | 241 | 6 | 23.5% | 38 |
+| Engine, no escalation agent | 70.9% | 27 | 7 | 80.2% | 212 | 0 | 25.6% | 37 |
+| Engine, no templates | 71.9% | 19 | 9 | 77.6% | 180 | 0 | 24.1% | 40 |
+| Engine, accepts every opportunity | 22.9% | 126 | 46 | 86.1% | 283 | 0 | 40.2% | 0 |
 
 ### The gate, written before any result
 
 `config/gate.json` was written before the first evaluation and is not moved. Dev:
 
 ```
-pass milestones on plan                           0.8198 >= 0.8
-pass milestone gain over the baseline, points     68.1 >= 10
-pass surprise slips vs the baseline               0.262 <= 0.5
-pass weeks above 90% load vs the baseline         0.354 <= 0.5
+pass milestones on plan                           0.9435 >= 0.8
+pass milestone gain over the baseline, points     80.5 >= 10
+pass surprise slips vs the baseline               0.119 <= 0.5
+pass weeks above 90% load vs the baseline         0.191 <= 0.5
 pass production incidents                         0 <= 1
-pass utilization at least                         0.7227 >= 0.65
-pass utilization at most                          0.7227 <= 0.88
-pass margin share beats the baseline              0.0961 > -0.0052
+pass utilization at least                         0.7323 >= 0.65
+pass utilization at most                          0.7323 <= 0.88
+pass margin share beats the baseline              0.2508 > -0.0052
 GATE PASSED
 ```
 
@@ -66,7 +81,7 @@ GATE PASSED
 
 Run once on 2026-11-15, on a year nothing was tuned on: 52 weeks, 14 forward-deployed engineers, 60 opportunities (33 public sector, 12 finance, 5 insurance, 10 manufacturing, 21 air-gapped), seed `heldout-2027`. It is harder than dev: more opportunities, more public-sector and air-gapped work, more blockers, larger overruns and a thinner advisory bench. The lock records the hash of every config file it ran with. What happened and what changed afterwards is in [docs/heldout.md](docs/heldout.md).
 
-Engine 56.8% milestones on plan against 7.6% by hand, 1 production incidents against 8.
+Engine 56.8% milestones on plan against 7.6% by hand. Production incidents: 1 against 8.
 
 | Design | Milestones on plan | Surprise slips | Customer escalations | Utilization | Person-weeks above 90% load | Production incidents | Margin | Declined |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -90,6 +105,17 @@ FAIL margin share beats the baseline              -0.1925 > -0.0681
 GATE FAILED
 ```
 
+### After the held-out year
+
+Three planner fixes and one intake fix came out of it (see [docs/heldout.md](docs/heldout.md)), measured on dev and on the stress year only. The held-out year was not run again. The engine before and after:
+
+| Year | Milestones on plan | Surprise slips | Utilization | Person-weeks above 90% load | Margin | Declined |
+|---|---:|---:|---:|---:|---:|---:|
+| dev at the held-out run | 82.0% | 11 | 72.3% | 163 | 9.6% | 12 |
+| dev now | 94.3% | 5 | 73.2% | 88 | 25.1% | 8 |
+| stress at the held-out run | 57.6% | 23 | 70.8% | 197 | 6.5% | 47 |
+| stress now | 69.5% | 23 | 78.6% | 190 | 26.3% | 38 |
+
 ## What is in it
 
 **Staffing planner** (`fde/product/staffing.py`). deepset's FDE team works in four profiles: Advisory for discovery, Builder for the build, Operating for go-live, Support for hypercare. The planner places people by expected hours of progress: profile fit, a penalty for missing skills (German, clearance, air-gapped experience, connectors) and a ramp-up cost for anyone new to the engagement. It aims to finish a phase a week early with a safety margin, keeps people near the utilization target, lets a person stretch to a full week only when a milestone is at stake and not two weeks in a row, and fills idle builder hours with template work.
@@ -108,7 +134,9 @@ GATE FAILED
 
 ![The staffing board for the week](docs/console-team.png)
 
-![A go-live review that held back a pipeline](docs/console-review.png)
+![Go-live reviews: two pipelines held back for a stale index, one ready](docs/console-review.png)
+
+![The results view, generated from the reports](docs/console-results.png)
 
 ## How it is kept honest
 

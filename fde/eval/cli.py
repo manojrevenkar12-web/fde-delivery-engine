@@ -34,6 +34,10 @@ def main(argv: list[str]) -> int:
         report = evaluate(root, "world.json", "dev")
         _write(root / "reports" / "dev.json", report)
         print(summary(report))
+        stress = evaluate(root, "stress.json", "stress")
+        _write(root / "reports" / "stress.json", stress)
+        print("stress")
+        print(summary(stress))
         return 0
     if cmd == "gate":
         verdict = gate_mod.check(json.loads((root / "config/gate.json").read_text()),

@@ -52,3 +52,10 @@ def test_the_model_prompt_keeps_the_note_as_data_and_replies_are_checked():
                                                               "scope_change": False, "sentiment": -3,
                                                               "pct_done": 1.7})}]}
     assert esc.parse_reply(reply) == esc.Signals(blocker=True, sentiment=-1, pct_done=1.0)
+
+
+def test_a_german_note_about_a_missing_approval_reads_as_blocked_on_access():
+    from fde.product.escalation import KeywordReader
+    s = KeywordReader().read("Kunde hat die Freigabe für den SharePoint-Zugang noch nicht erteilt, wir warten seit "
+                             "zwei Wochen. Der Fachbereich möchte zusätzlich Excel-Tabellen anbinden. Stand ca. 40%.")
+    assert s.blocker and s.data_access and s.scope_change and s.pct_done == 0.4

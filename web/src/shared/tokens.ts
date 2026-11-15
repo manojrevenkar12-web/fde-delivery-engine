@@ -29,3 +29,10 @@ export const PROFILE_LABEL: Record<string, string> = {
   operating: 'Operating',
   support: 'Support',
 }
+
+export const SKILL_LABEL: Record<string, string> = {
+  german: 'German',
+  clearance: 'a security clearance',
+  airgap: 'air-gapped experience',
+  connectors: 'connector work',
+}
