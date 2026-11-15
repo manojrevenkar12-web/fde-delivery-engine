@@ -1,0 +1,12 @@
+{
+  "_about": "Written before any result. The engine ships only if every line holds on dev; the held-out year is judged by the same lines and this file is never moved after the held-out run.",
+  "design": "engine",
+  "baseline": "by_hand",
+  "minMilestonesOnPlan": 0.8,
+  "minMilestoneGainPoints": 10,
+  "maxSurpriseSlipShareOfBaseline": 0.5,
+  "maxBurnoutWeeksShareOfBaseline": 0.5,
+  "maxProductionIncidents": 1,
+  "utilizationBand": [0.65, 0.88],
+  "marginMustBeatBaseline": true
+}

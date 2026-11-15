@@ -1,0 +1,64 @@
+{
+  "_about": "The designs compared on the same world. Ablations switch off one part of the engine at a time.",
+  "designs": {
+    "by_hand": {
+      "label": "Manager staffs by hand, escalates on a slip, ships when the team says done",
+      "staffing": "by_hand",
+      "escalation": "on_slip",
+      "gate": false,
+      "patterns": false,
+      "intake": "accept_all"
+    },
+    "first_free": {
+      "label": "First free person of the profile, escalation on a slip, no gate",
+      "staffing": "first_free",
+      "escalation": "on_slip",
+      "gate": false,
+      "patterns": false,
+      "intake": "accept_all"
+    },
+    "engine": {
+      "label": "The engine: planner, escalation agent, go-live gate, templates",
+      "staffing": "engine",
+      "escalation": "engine",
+      "gate": true,
+      "patterns": true,
+      "intake": "engine"
+    },
+    "engine_no_gate": {
+      "label": "The engine without the go-live gate",
+      "staffing": "engine",
+      "escalation": "engine",
+      "gate": false,
+      "patterns": true,
+      "intake": "engine"
+    },
+    "engine_no_escalation": {
+      "label": "The engine, escalating only on a slip",
+      "staffing": "engine",
+      "escalation": "on_slip",
+      "gate": true,
+      "patterns": true,
+      "intake": "engine"
+    },
+    "engine_no_patterns": {
+      "label": "The engine without templates",
+      "staffing": "engine",
+      "escalation": "engine",
+      "gate": true,
+      "patterns": false,
+      "intake": "engine"
+    },
+    "engine_accept_all": {
+      "label": "The engine, but every opportunity accepted",
+      "staffing": "engine",
+      "escalation": "engine",
+      "gate": true,
+      "patterns": true,
+      "intake": "accept_all"
+    }
+  },
+  "byHandOvertimeLoad": 1.1,
+  "tmOverrunBillableShare": 1.2,
+  "_tmOverrunBillableShare": "On time and materials, customers pay up to this multiple of a phase's scope; hours beyond are written off."
+}

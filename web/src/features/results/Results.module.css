@@ -1,0 +1,57 @@
+.view {
+  padding: var(--space-5) var(--space-6) var(--space-7);
+  overflow-x: auto;
+}
+.title {
+  margin: 0;
+  font-size: var(--step-3);
+  line-height: var(--leading-tight);
+}
+.subtitle {
+  margin: var(--space-6) 0 0;
+  font-size: var(--step-2);
+}
+.lede {
+  color: var(--muted);
+}
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  margin-block: var(--space-4);
+}
+.table caption {
+  text-align: start;
+  color: var(--muted);
+  padding-block-end: var(--space-2);
+}
+.table th,
+.table td {
+  text-align: start;
+  padding: var(--space-2) var(--space-3);
+  border-block-end: var(--hairline) solid var(--rule);
+}
+.table thead th {
+  font-size: var(--step--1);
+  color: var(--muted);
+  font-weight: normal;
+}
+.ours th,
+.ours td {
+  background: var(--violet-soft);
+  font-weight: var(--weight-strong);
+}
+.bar {
+  display: inline-block;
+  inline-size: 6rem;
+  block-size: var(--space-2);
+  margin-inline-end: var(--space-2);
+  background: var(--rule);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  vertical-align: middle;
+}
+.fill {
+  display: block;
+  block-size: 100%;
+  background: var(--violet);
+}

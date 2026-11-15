@@ -1,0 +1,106 @@
+.view {
+  padding: var(--space-5) var(--space-6) var(--space-7);
+  max-inline-size: 72rem;
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: var(--space-4);
+}
+.title {
+  margin: 0;
+  font-size: var(--step-3);
+  line-height: var(--leading-tight);
+}
+.sub {
+  margin: var(--space-2) 0 var(--space-5);
+  color: var(--muted);
+  max-inline-size: var(--measure);
+}
+.replan {
+  border: 0;
+  background: var(--violet);
+  color: var(--surface);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-small);
+  font-weight: var(--weight-strong);
+}
+.replan:disabled {
+  opacity: 0.5;
+}
+.failure {
+  color: var(--red);
+}
+.group {
+  margin-block-end: var(--space-5);
+}
+.profile {
+  font-size: var(--step-1);
+  margin: 0 0 var(--space-2);
+}
+.people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.person {
+  display: grid;
+  grid-template-columns: 14rem minmax(8rem, 16rem) 9rem 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding-block: var(--space-2);
+  border-block-end: var(--hairline) solid var(--rule);
+}
+.name {
+  font-weight: var(--weight-strong);
+}
+.id {
+  font-weight: normal;
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+.bar {
+  position: relative;
+  display: block;
+  block-size: var(--bar-height);
+  background: var(--rule);
+  border-radius: var(--radius-pill);
+}
+.fill,
+.fillHot {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  border-radius: var(--radius-pill);
+  background: var(--violet);
+}
+.fillHot {
+  background: var(--amber);
+}
+.target {
+  position: absolute;
+  inset-block: calc(-1 * var(--space-1));
+  inline-size: var(--rule-strong);
+  background: var(--ink);
+}
+.hours {
+  font-size: var(--step--1);
+}
+.work {
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+.warnings ul {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  color: var(--amber);
+}
+@media (max-width: 60rem) {
+  .view {
+    padding-inline: var(--space-4);
+  }
+  .person {
+    grid-template-columns: 1fr 1fr;
+  }
+}

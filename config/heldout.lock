@@ -1,0 +1,16 @@
+{
+  "ranOn": "2026-11-15",
+  "configSha256": "0a62daa025efe607c3a2ac7b7b2eb7b011fe1d93c9b33eca1a0d83cce9f36e7a",
+  "gatePassed": false,
+  "gateLines": [
+    "FAIL milestones on plan                           0.5682 >= 0.8",
+    "pass milestone gain over the baseline, points     49.3 >= 10",
+    "pass surprise slips vs the baseline               0.306 <= 0.5",
+    "pass weeks above 90% load vs the baseline         0.403 <= 0.5",
+    "pass production incidents                         1 <= 1",
+    "FAIL utilization at least                         0.6016 >= 0.65",
+    "pass utilization at most                          0.6016 <= 0.88",
+    "FAIL margin share beats the baseline              -0.1925 > -0.0681",
+    "GATE FAILED"
+  ]
+}

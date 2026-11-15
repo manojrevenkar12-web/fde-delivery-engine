@@ -1,0 +1,86 @@
+/* The console's only source of colour, type, space and motion. */
+:root {
+  --canvas: #eef1f4;
+  --surface: #ffffff;
+  --ink: #17202b;
+  --muted: #5b6573;
+  --rule: #d8dde4;
+  --violet: #4b3fb5;
+  --violet-soft: #e9e7f8;
+  --amber: #9a5c00;
+  --amber-soft: #fbefd9;
+  --red: #b3261e;
+  --red-soft: #fbe5e3;
+  --green: #1e7a4c;
+  --green-soft: #e1f2e8;
+  --focus: #4b3fb5;
+
+  --font-ui: 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-code: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-3: 2.25rem;
+  --leading: 1.5;
+  --leading-tight: 1.15;
+  --weight-strong: 620;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --radius-small: 4px;
+  --radius-pill: 999px;
+  --hairline: 1px;
+  --rule-strong: 2px;
+  --list-width: 22rem;
+  --bar-height: 0.625rem;
+  --measure: 68ch;
+  --shimmer: 1.4s;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  line-height: var(--leading);
+  font-variant-numeric: tabular-nums;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: var(--rule-strong) solid var(--focus);
+  outline-offset: var(--rule-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

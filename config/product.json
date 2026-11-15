@@ -1,0 +1,62 @@
+{
+  "_about": "The engine's own settings. The simulated world never reads this file.",
+  "staffing": {
+    "utilizationTarget": 0.82,
+    "utilizationFloor": 0.7,
+    "hotLoad": 0.9,
+    "maxHotWeeksInARow": 1,
+    "blockHours": 8,
+    "skillMismatchAllowed": false,
+    "escalatedPriorityBoost": 1.0,
+    "finishWeeksEarly": 1,
+    "safetyFactor": 1.1,
+    "assumedRampUp": 0.7,
+    "assumedSkillGap": 0.5,
+    "minEffectiveRate": 0.6,
+    "_assumed": "The manager's own estimates of how much slower someone is in their first week on an engagement, or without a skill the engagement needs. Weak matches (below minEffectiveRate) are used only when a date is at stake."
+  },
+  "escalation": {
+    "blockerWeeks": 2,
+    "negativeSentimentWeeks": 2,
+    "forecastSlipRatio": 1.15,
+    "scoreThreshold": 3.0,
+    "weights": {
+      "blocker": 2.0,
+      "scopeChange": 3.0,
+      "negativeSentiment": 1.0,
+      "dataAccess": 1.5,
+      "forecastSlip": 2.0
+    }
+  },
+  "gate": {
+    "minRecall": 0.9,
+    "minGrounded": 0.85,
+    "goldenQuestions": 30
+  },
+  "patterns": {
+    "templateAfterEngagements": 2
+  },
+  "model": {
+    "name": "claude-sonnet-5-5",
+    "maxTokens": 600,
+    "apiUrl": "https://api.anthropic.com/v1/messages"
+  },
+  "apiKeys": [
+    {
+      "key": "manager-demo-key",
+      "actor": "manager:demo",
+      "role": "manager"
+    },
+    {
+      "key": "fde-demo-key",
+      "actor": "fde:f-builder-01",
+      "role": "fde"
+    }
+  ],
+  "intake": {
+    "horizonWeeks": 8,
+    "maxLoadOfTarget": 0.85,
+    "adjacentCoverShare": 0.2,
+    "_about": "Accept a new engagement only if no profile's average load over the next weeks would exceed this share of what it delivers at the utilization target, counting a fifth of adjacent profiles' capacity as cover."
+  }
+}

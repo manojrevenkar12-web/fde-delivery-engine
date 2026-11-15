@@ -1,0 +1,83 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Tests
+        run: pytest -q tests
+      - name: The report, the gate, the README and the demo seed agree with the code
+        run: |
+          python -m fde.eval.cli evaluate
+          python -m fde.eval.cli gate
+          python -m fde.eval.cli readme
+          python -m fde.eval.cli seed
+          git diff --exit-code reports/dev.json README.md demo/seed.json
+
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fde
+          POSTGRES_PASSWORD: fde
+          POSTGRES_DB: fde
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U fde" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      FDE_TEST_DATABASE_URL: postgresql://fde:fde@localhost:5432/fde
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: The audit chain holds on Postgres
+        run: pytest -q tests/test_service.py -k postgres
+      - name: The service runs on Postgres
+        run: |
+          DATABASE_URL=$FDE_TEST_DATABASE_URL uvicorn fde.service.app:app --port 8790 &
+          for i in $(seq 1 60); do curl -sf localhost:8790/healthz && break; sleep 1; done
+          curl -sf -X POST -H 'X-Api-Key: manager-demo-key' -H 'content-type: application/json' localhost:8790/api/plan > /dev/null
+          curl -sf -H 'X-Api-Key: manager-demo-key' localhost:8790/api/audit/verify | python3 -c "import json,sys; d=json.load(sys.stdin); print(d); assert d['intact'] and d['entries'] > 0"
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t fde-delivery-engine .
+      - name: The image serves the console and the API
+        run: |
+          docker run -d -p 8790:8790 --name desk fde-delivery-engine
+          for i in $(seq 1 60); do curl -sf localhost:8790/healthz && break; sleep 1; done
+          curl -sf localhost:8790/ | grep -q '<div id="root">'
+          curl -sf -H 'X-Api-Key: manager-demo-key' localhost:8790/api/team | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d['people']), 'people'); assert d['people']"

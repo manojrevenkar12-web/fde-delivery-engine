@@ -1,0 +1,114 @@
+.view {
+  padding: var(--space-5) var(--space-6) var(--space-7);
+}
+.title {
+  margin: 0;
+  font-size: var(--step-3);
+  line-height: var(--leading-tight);
+}
+.sub {
+  margin: var(--space-2) 0 var(--space-5);
+  color: var(--muted);
+  max-inline-size: var(--measure);
+}
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: var(--space-4);
+}
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-small);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.eid {
+  margin: 0;
+  font-size: var(--step-1);
+}
+.topology {
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+.meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+.config {
+  margin: 0;
+  font-family: var(--font-code);
+  font-size: var(--step--1);
+  background: var(--canvas);
+  padding: var(--space-3);
+  border-radius: var(--radius-small);
+  overflow-x: auto;
+}
+.run {
+  justify-self: start;
+  border: 0;
+  background: var(--violet);
+  color: var(--surface);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-small);
+  font-weight: var(--weight-strong);
+}
+.run:disabled {
+  opacity: 0.5;
+}
+.failure {
+  color: var(--red);
+}
+.pass,
+.block {
+  padding: var(--space-3);
+  border-radius: var(--radius-small);
+  background: var(--green-soft);
+}
+.block {
+  background: var(--red-soft);
+}
+.verdict {
+  margin: 0 0 var(--space-2);
+  font-weight: var(--weight-strong);
+}
+.pass .verdict {
+  color: var(--green);
+}
+.block .verdict {
+  color: var(--red);
+}
+.figures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+}
+.figures dt {
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+.figures dd {
+  margin: 0;
+  font-size: var(--step-2);
+  font-weight: var(--weight-strong);
+}
+.findings {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+@media (max-width: 48rem) {
+  .view {
+    padding-inline: var(--space-4);
+  }
+}

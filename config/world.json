@@ -1,0 +1,125 @@
+{
+  "_about": "The simulated services business: the team, the engagements that arrive, what really happens on them, and the people and models around them. Only fde/world reads this file.",
+  "seed": "dev-2026",
+  "weeks": 52,
+  "team": {
+    "advisory": 3,
+    "builder": 7,
+    "operating": 2,
+    "support": 2,
+    "partTimeShare": 0.15,
+    "skillShare": {
+      "german": 0.7,
+      "clearance": 0.45,
+      "airgap": 0.5,
+      "connectors": 0.5
+    },
+    "productivityMin": 0.85,
+    "productivityMax": 1.15
+  },
+  "engagements": {
+    "arrivalsPerWeek": 1.0,
+    "sectors": {
+      "public": 0.4,
+      "manufacturing": 0.2,
+      "insurance": 0.2,
+      "finance": 0.2
+    },
+    "topologies": {
+      "public": {
+        "air_gapped": 0.4,
+        "self_hosted": 0.5,
+        "cloud": 0.1
+      },
+      "other": {
+        "air_gapped": 0.1,
+        "self_hosted": 0.4,
+        "cloud": 0.5
+      }
+    },
+    "fixedFeeShare": 0.5,
+    "scope": {
+      "discovery": [
+        40,
+        80
+      ],
+      "build": [
+        100,
+        180
+      ],
+      "go_live": [
+        40,
+        72
+      ],
+      "hypercare": [
+        24,
+        56
+      ]
+    },
+    "workItemsMin": 1,
+    "workItemsMax": 4,
+    "plannedWeeklyHours": {
+      "discovery": 32,
+      "build": 56,
+      "go_live": 32,
+      "hypercare": 24
+    },
+    "bufferWeeks": 1,
+    "overrunSigma": 0.22,
+    "germanOtherShare": 0.4,
+    "_arrivals": "Opportunities a week. A design can decline one; declined work earns nothing."
+  },
+  "risks": {
+    "blockerPerWeek": 0.05,
+    "blockerWeeksMin": 1,
+    "blockerWeeksMax": 4,
+    "dataAccessShare": 0.6,
+    "blockedProgressShare": 0.3,
+    "scopeCreepPerWeek": 0.02,
+    "scopeCreepMin": 0.1,
+    "scopeCreepMax": 0.25,
+    "changeRequestWindowWeeks": 2,
+    "customerEscalationOnSurpriseSlip": 0.5,
+    "customerEscalationOnIncident": 0.8,
+    "scopeCreepMaxPerEngagement": 1
+  },
+  "people": {
+    "newToEngagementProductivity": 0.7,
+    "skillMismatchProductivity": 0.5,
+    "fatiguePerHotWeek": 1,
+    "fatigueProductivityLoss": 0.08,
+    "sickChanceAtFatigue3": 0.3,
+    "hotLoad": 0.9,
+    "progressOptimism": 0.08
+  },
+  "pipelines": {
+    "defectBase": 0.22,
+    "defectPerFatigue": 0.08,
+    "defectSkillMismatch": 0.15,
+    "defects": {
+      "stale_index": 0.3,
+      "small_chunks": 0.2,
+      "top_k_one": 0.2,
+      "wrong_filter": 0.15,
+      "external_endpoint": 0.15
+    },
+    "programsPerCorpus": 60,
+    "goldenQuestions": 30,
+    "productionQuestions": 200,
+    "productionRecallFloor": 0.85,
+    "reworkHoursMin": 16,
+    "reworkHoursMax": 32,
+    "incidentHours": 40,
+    "incidentPenaltyEur": 15000
+  },
+  "reader": {
+    "_about": "The model stand-in that reads status notes: how often it misses or invents each signal, and how far off it reads a percentage.",
+    "missBlocker": 0.06,
+    "missScopeChange": 0.1,
+    "missSentiment": 0.12,
+    "inventSignal": 0.02,
+    "pctNoise": 0.05
+  },
+  "warmupWeeks": 6,
+  "_warmupWeeks": "The year starts with an empty pipeline; utilization, burnout and money are counted from this week on, and milestones due from it."
+}

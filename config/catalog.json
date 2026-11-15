@@ -1,0 +1,125 @@
+{
+  "_about": "Shared facts about the services business: the FDE profiles, the work an engagement can need, deployment topologies and the commercial rates. Both the simulated world and the product read this file. Every customer and person in this repository is fictional.",
+  "profiles": {
+    "advisory": {
+      "label": "Advisory",
+      "phase": "discovery",
+      "billRatePerHour": 240,
+      "costPerHour": 95
+    },
+    "builder": {
+      "label": "Builder",
+      "phase": "build",
+      "billRatePerHour": 210,
+      "costPerHour": 85
+    },
+    "operating": {
+      "label": "Operating",
+      "phase": "go_live",
+      "billRatePerHour": 195,
+      "costPerHour": 80
+    },
+    "support": {
+      "label": "Support",
+      "phase": "hypercare",
+      "billRatePerHour": 160,
+      "costPerHour": 65
+    }
+  },
+  "phases": [
+    "discovery",
+    "build",
+    "go_live",
+    "hypercare"
+  ],
+  "adjacentProfiles": {
+    "_about": "Who can cover a phase when its own profile is short, and at what share of their usual productivity.",
+    "advisory": {
+      "builder": 0.6
+    },
+    "builder": {
+      "operating": 0.6,
+      "advisory": 0.5
+    },
+    "operating": {
+      "builder": 0.7,
+      "support": 0.6
+    },
+    "support": {
+      "operating": 0.8
+    }
+  },
+  "skills": [
+    "german",
+    "clearance",
+    "airgap",
+    "connectors"
+  ],
+  "topologies": {
+    "cloud": {
+      "label": "Managed cloud",
+      "externalNetwork": true
+    },
+    "self_hosted": {
+      "label": "Self-hosted",
+      "externalNetwork": true
+    },
+    "air_gapped": {
+      "label": "Air-gapped",
+      "externalNetwork": false
+    }
+  },
+  "workTypes": {
+    "sharepoint_connector": {
+      "label": "SharePoint connector",
+      "hours": 40
+    },
+    "confluence_connector": {
+      "label": "Confluence connector",
+      "hours": 32
+    },
+    "ocr_scanned_pdfs": {
+      "label": "OCR for scanned PDFs",
+      "hours": 36
+    },
+    "pii_redaction": {
+      "label": "PII redaction before indexing",
+      "hours": 44
+    },
+    "keycloak_sso": {
+      "label": "Keycloak SSO and document-level access",
+      "hours": 48
+    },
+    "airgap_model_packaging": {
+      "label": "Model packaging for air-gapped install",
+      "hours": 56
+    },
+    "german_eval_set": {
+      "label": "German evaluation set bootstrapping",
+      "hours": 28
+    },
+    "citation_ui": {
+      "label": "Answer citations in the customer UI",
+      "hours": 24
+    },
+    "table_extraction": {
+      "label": "Table extraction from annual reports",
+      "hours": 40
+    },
+    "audit_logging": {
+      "label": "Audit logging for the works council",
+      "hours": 20
+    },
+    "multi_tenant_index": {
+      "label": "Per-department indexes and filters",
+      "hours": 32
+    },
+    "helm_hardening": {
+      "label": "Helm chart hardening for self-hosted",
+      "hours": 30
+    }
+  },
+  "templateSavingShare": 0.6,
+  "_templateSavingShare": "A reusable template saves this share of a work item's hours when the item comes up again.",
+  "templateBuildHours": 24
+}
